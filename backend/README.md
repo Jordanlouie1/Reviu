@@ -1,13 +1,5 @@
-# Sample Hardhat Project
+# Hardhat Local ETH Network
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+1. `docker build -t ethnet . && docker run -p 8545:8545 -it ethnet bash` then `npx hardhat node`
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
-```
+2. In another terminal window: `docker ps` then `docker exec -it container_id bash` then `npx hardhat ignition deploy ignition/modules/dPairReview.js --network localhost`
