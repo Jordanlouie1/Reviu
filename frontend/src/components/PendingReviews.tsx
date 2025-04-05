@@ -16,6 +16,26 @@ export default function PendingReviews({ papers }: Props) {
     setSelectedPaper(null);
     setReview('');
   };
+  
+
+  const handleDonwloadPaper = () => {
+    if (!selectedPaper) return;
+  
+    // Construct the file path or URL
+    const pdfUrl = `/user-papers/${selectedPaper.id}.pdf`; // adjust this path to your setup
+  
+    // Open the PDF in a new tab
+    window.open(pdfUrl, '_blank');
+  
+    // Optionally log and reset
+    console.log('Review submitted:', { paperId: selectedPaper.id, review });
+    setSelectedPaper(null);
+    setReview('');
+  };
+
+
+
+
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -60,7 +80,13 @@ export default function PendingReviews({ papers }: Props) {
             
             <div className="w-96 p-6 flex flex-col">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Submit Review</h3>
+              <button
+                onClick={handleDonwloadPaper}
+                className="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition-colors"
+              >
+                Download Paper
+              </button>
+                <h3 className="text-lg font-medium">Write Review</h3>
                 <button
                   onClick={() => setSelectedPaper(null)}
                   className="p-1 hover:bg-gray-100 rounded"
