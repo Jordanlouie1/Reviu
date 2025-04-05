@@ -21,6 +21,149 @@ const Web3Context = createContext<Web3ContextType>({
     setContractAddress: () => { }
 });
 
+const ABI = [
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "paperId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "author",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "title",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
+            }
+        ],
+        "name": "PaperSubmitted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "paperId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "reviewer",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
+            }
+        ],
+        "name": "ReviewSubmitted",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "paperCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "papers",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "author",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "title",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "paperId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
+            }
+        ],
+        "name": "reviewPaper",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "title",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "url",
+                "type": "string"
+            }
+        ],
+        "name": "submitPaper",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+];
+
 export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [account, setAccount] = useState<string | null>(null);
     const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
@@ -51,10 +194,14 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
+    // Contract Address Update Logic
     useEffect(() => {
         const updateContract = async () => {
             if (signer && contractAddress) {
                 console.log(contractAddress)
+                const dPeerReview = new ethers.Contract(contractAddress, ABI, provider)
+                setContract(dPeerReview);
+                console.log(dPeerReview);
             }
         };
 
