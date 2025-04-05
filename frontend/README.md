@@ -2,6 +2,13 @@
 
 This is a modern, responsive web application for anonymous peer reviews of academic papers. Built with React, TypeScript, and Tailwind CSS.
 
+### 🎯 Problem
+Peer review is the backbone of academic and technical innovation — yet the current system is outdated, opaque, and exclusionary.
+  Reviews often take months, and are locked behind journal walls.
+  Independent researchers and interdisciplinary thinkers are ignored due to institutional gatekeeping.
+  Reviewers do unpaid work and get no lasting reputation or proof of their contributions.
+  There’s little to no transparency in who reviews what, and no way to match papers to the right experts at scale.
+
 ### Features
 
 - Dashboard with pending reviews
