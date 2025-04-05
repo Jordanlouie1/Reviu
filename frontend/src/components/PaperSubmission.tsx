@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, File } from 'lucide-react';
+import { Upload, File, Check } from 'lucide-react';
 import { User } from '../types';
 
 interface Props {
@@ -81,17 +81,22 @@ export default function PaperSubmission({ user }: Props) {
               htmlFor="paper-upload"
               className="cursor-pointer flex flex-col items-center"
             >
-              <Upload className="h-8 w-8 text-gray-400 mb-2" />
+              {file ? (
+                <Check className="h-8 w-8 text-green-500 mb-2" />
+              ) : (
+                <Upload className="h-8 w-8 text-gray-400 mb-2" />
+              )}
               <span className="text-sm text-gray-600">
-                Click to upload or drag and drop
+                {file ? file.name : "Click to upload or drag and drop"}
               </span>
-              <span className="text-xs text-gray-500 mt-1">
-                PDF, Markdown, or Text files
-              </span>
+              {!file && (
+                <span className="text-xs text-gray-500 mt-1">
+                  PDF, Markdown, or Text files
+                </span>
+              )}
             </label>
           </div>
         </div>
-        
         <button
           type="submit"
           className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition-colors"
