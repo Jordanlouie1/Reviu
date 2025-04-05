@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Wallet, User as UserIcon } from 'lucide-react';
+import { useWeb3 } from "./eth_utils/Web3Context";
 
 export default function Header() {
-  const [connected, setConnected] = useState(false);
-  const [address, setAddress] = useState('');
+  const { account, connectWallet, setContractAddress } = useWeb3();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [textInput, setTextInput] = useState('');
 
@@ -14,27 +14,13 @@ export default function Header() {
     referralCode: 'REF123XYZ'
   };
 
-  const connectWallet = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAddress(accounts[0]);
-        setConnected(true);
-      } catch (error) {
-        console.error('Error connecting wallet:', error);
-      }
-    } else {
-      alert('Please install MetaMask!');
-    }
-  };
-
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
   };
 
   const handleSubmitInput = () => {
     console.log('Submitted input:', textInput);
-    setTextInput('');
+    setContractAddress(textInput);
   };
 
   return (
@@ -44,11 +30,11 @@ export default function Header() {
           <h1 className="text-2xl font-bold text-gray-900">PeerReview</h1>
 
           <div className="flex items-center space-x-4">
-            {connected ? (
+            {account ? (
               <div className="flex items-center space-x-2 bg-gray-100 rounded-lg px-4 py-2">
                 <Wallet className="h-5 w-5 text-gray-600" />
                 <span className="text-sm text-gray-600">
-                  {`${address.slice(0, 6)}...${address.slice(-4)}`}
+                  {`${account.slice(0, 6)}...${account.slice(-4)}`}
                 </span>
               </div>
             ) : (
