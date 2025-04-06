@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { FileText, X } from 'lucide-react';
 import { Paper } from '../types';
+import { useWeb3 } from "./eth_utils/Web3Context";
 
-interface Props {
-  papers: Paper[];
-}
-
-export default function PendingReviews({ papers }: Props) {
+export default function PendingReviews({ }) {
+  const { papers } = useWeb3();
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [review, setReview] = useState('');
 

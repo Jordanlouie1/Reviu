@@ -17,8 +17,8 @@ export default function PaperSubmission({ user }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle paper submission
-    console.log('Paper submitted:', { title, abstract, tags: tags.split(',').map(t => t.trim()), file });
-    submitPaper(title, abstract);
+    console.log('Paper submitted:', { title, abstract, tags, file });
+    submitPaper(title, abstract, tags, "");
 
     setTitle('');
     setAbstract('');
