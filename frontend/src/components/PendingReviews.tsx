@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { FileText, X } from 'lucide-react';
 import { Paper } from '../types';
+import { useWeb3 } from "./eth_utils/Web3Context";
 
-interface Props {
-  papers: Paper[];
-}
-
-export default function PendingReviews({ papers }: Props) {
+export default function PendingReviews({ }) {
+  const { papers } = useWeb3();
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [review, setReview] = useState('');
 
@@ -54,14 +52,7 @@ export default function PendingReviews({ papers }: Props) {
                 <h3 className="font-medium">{paper.title}</h3>
                 <p className="text-sm text-gray-600 mt-1">{paper.abstract}</p>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {paper.tags?.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  {paper.tags}
                 </div>
               </div>
             </div>

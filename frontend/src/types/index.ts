@@ -7,7 +7,7 @@ export interface Paper {
   dateSubmitted: string;
   status: 'pending' | 'reviewed' | 'approved';
   reviews: Review[];
-  tags?: string[];
+  tags: string;
 }
 
 export interface Review {
