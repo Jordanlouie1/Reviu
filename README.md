@@ -51,11 +51,10 @@ npm run dev
 - Tailwind CSS
 - Lucide React (icons)
 
-##Backend setup
+## Backend setup
+
+Please refer to `backend/README.md`
+
+---
 
 Feel free to submit issues and pull requests.
-Backend setup:
-Hardhat Local ETH Network
-docker build -t ethnet . && docker run -p 8545:8545 -it ethnet bash then npx hardhat node
-
-In another terminal window: docker ps then docker exec -it container_id bash then npx hardhat ignition deploy ignition/modules/dPairReview.js --network localhost
