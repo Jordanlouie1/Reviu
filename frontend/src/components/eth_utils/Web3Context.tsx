@@ -11,6 +11,7 @@ interface Web3ContextType {
     paperCount: BigInt;
     connectWallet: () => Promise<void>;
     setContractAddress: (address: string) => void;
+    submitPaper: (title: string, url: string) => Promise<string>;
 }
 
 const Web3Context = createContext<Web3ContextType>({
@@ -21,10 +22,12 @@ const Web3Context = createContext<Web3ContextType>({
     contract: null,
     paperCount: 0n,
     connectWallet: async () => { },
-    setContractAddress: () => { }
+    setContractAddress: () => { },
+    submitPaper: async () => ""
 });
 
 const ABI = contractJSON.abi;
+const INTERFACE = new ethers.Interface(ABI);
 
 export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [account, setAccount] = useState<string | null>(null);
@@ -51,6 +54,42 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         setContractAddress(null);
     };
 
+    const submitPaper = async (title: string, url: string): Promise<string> => {
+        console.log('signer', signer);
+        console.log('contract', contract);
+        if (!contract || !signer) {
+            throw new Error("Contract or signer not available");
+        }
+
+        try {
+            // Send the transaction
+            const tx = await contract.submitPaper(title, url);
+            const receipt = await tx.wait();
+
+            // Decode logs to find the PaperSubmitted event
+            const parsedLog = receipt.logs
+                .map((log: { topics: ReadonlyArray<string>; data: string; }) => {
+                    try {
+                        return INTERFACE.parseLog(log);
+                    } catch (e) {
+                        return null;
+                    }
+                })
+                .find((log: { name: string; }) => log?.name === "PaperSubmitted");
+
+            if (!parsedLog) {
+                throw new Error("PaperSubmitted event not found in transaction logs");
+            }
+
+            const paperId = parsedLog.args.paperId.toString(); // BigNumber to string
+            return paperId;
+
+        } catch (err) {
+            console.error("Failed to submit paper:", err);
+            throw err;
+        }
+    };
+
     useEffect(() => {
         if (window.ethereum) {
             connectWallet();
@@ -62,7 +101,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         const updateContract = async () => {
             if (signer && contractAddress) {
                 console.log(contractAddress)
-                const dPeerReview = new ethers.Contract(contractAddress, ABI, provider)
+                const dPeerReview = new ethers.Contract(contractAddress, ABI, signer);
                 setContract(dPeerReview);
                 console.log(dPeerReview);
                 console.log('paper count', await dPeerReview.paperCount());
@@ -103,7 +142,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [contract]);
 
     return (
-        <Web3Context.Provider value={{ account, provider, signer, contract, contractAddress, paperCount, connectWallet, setContractAddress }}>
+        <Web3Context.Provider value={{ account, provider, signer, contract, contractAddress, paperCount, connectWallet, setContractAddress, submitPaper }}>
             {children}
         </Web3Context.Provider>
     );

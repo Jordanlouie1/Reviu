@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Upload, File, Check } from 'lucide-react';
 import { User } from '../types';
+import { useWeb3 } from "./eth_utils/Web3Context";
 
 interface Props {
   user: User;
 }
 
 export default function PaperSubmission({ user }: Props) {
+  const { submitPaper } = useWeb3();
   const [title, setTitle] = useState('');
   const [abstract, setAbstract] = useState('');
   const [tags, setTags] = useState('');
@@ -16,6 +18,8 @@ export default function PaperSubmission({ user }: Props) {
     e.preventDefault();
     // Handle paper submission
     console.log('Paper submitted:', { title, abstract, tags: tags.split(',').map(t => t.trim()), file });
+    submitPaper(title, abstract);
+
     setTitle('');
     setAbstract('');
     setTags('');
