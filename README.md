@@ -1,4 +1,4 @@
-Reviu
+## Reviu
 ![image](https://github.com/user-attachments/assets/0d82db4a-a8f3-428d-8d3a-4e8e24afbcd9)
 
 ## Anonymous Peer Review Platform
@@ -22,6 +22,7 @@ Peer review is the backbone of academic and technical innovation — yet the cur
 - Mock data integration
 
 ### Getting Started
+## Frontend Setup
 
 1. Clone the repository
 2. Install dependencies:
@@ -50,7 +51,7 @@ npm run dev
 - Tailwind CSS
 - Lucide React (icons)
 
-### Contributing
+##Backend setup
 
 Feel free to submit issues and pull requests.
 Backend setup:
