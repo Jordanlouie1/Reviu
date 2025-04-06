@@ -3,7 +3,7 @@ import { Wallet, User as UserIcon } from 'lucide-react';
 import { useWeb3 } from "./eth_utils/Web3Context";
 
 export default function Header() {
-  const { account, connectWallet, setContractAddress } = useWeb3();
+  const { account, paperCount, connectWallet, setContractAddress } = useWeb3();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [textInput, setTextInput] = useState('');
 
@@ -28,7 +28,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Reviu</h1>
-          <h1 className="text-2xl font-bold text-gray-900">3 Papers Reviewed</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{paperCount.toString()} Papers Reviewed</h1>
           <div className="flex items-center space-x-4">
             {account ? (
               <div className="flex items-center space-x-2 bg-gray-100 rounded-lg px-4 py-2">
