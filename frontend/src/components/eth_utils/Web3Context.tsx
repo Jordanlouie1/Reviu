@@ -88,7 +88,6 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
             const paperId = parsedLog.args.paperId.toString(); // BigNumber to string
             return paperId;
-
         } catch (err) {
             console.error("Failed to submit paper:", err);
             throw err;
@@ -113,21 +112,19 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
                 setPaperCount(await dPeerReview.paperCount());
 
                 const _papers: Paper[] = [];
-                for (let i = 0n; i < 3n; i++) {
-                    const paper = await dPeerReview.getPaper(i);
-                    console.log(paper);
-                    if (!paper) break;
-                    const _words = paper.abs.trim().split(/\s+/);
+                for (let i = 1n; i < 4n; i++) {
+                    const { author, title, abs, tags, url } = await dPeerReview.getPaper(i);
+                    const _words = abs.trim().split(/\s+/);
                     const _newPaper: Paper = {
-                        id: paper.paperId.toString(),
-                        title: paper.title,
-                        abstract: (_words.length <= 30) ? paper.abs : _words.slice(0, 30).join(" ") + " ...",
-                        content: paper.abs,
-                        author: paper.author,
+                        id: i.toString(),
+                        title: title,
+                        abstract: (_words.length <= 30) ? abs : _words.slice(0, 30).join(" ") + " ...",
+                        content: abs,
+                        author: author,
                         dateSubmitted: new Date().toISOString(),
                         status: "pending",
                         reviews: [],
-                        tags: paper.tags
+                        tags: tags
                     };
                     _papers.unshift(_newPaper);
                 }

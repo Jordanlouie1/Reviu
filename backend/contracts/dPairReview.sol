@@ -27,7 +27,6 @@ contract dPairReview {
     event ReviewSubmitted(uint indexed paperId, address indexed reviewer, string url);
 
     function getPaper(uint paperId) public view returns (
-        uint id,
         address author,
         string memory title,
         string memory abs,
@@ -35,7 +34,7 @@ contract dPairReview {
         string memory url
     ) {
         Paper memory paper = papers[paperId];
-        return (paperId, paper.author, paper.title, paper.abs, paper.tags, paper.url);
+        return (paper.author, paper.title, paper.abs, paper.tags, paper.url);
     }
 
     function submitPaper(string memory title, string memory abs, string memory tags, string memory url) public returns (uint) {
