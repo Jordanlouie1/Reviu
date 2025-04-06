@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
+import contractJSON from "./dPairReview.json";
 
 interface Web3ContextType {
     account: string | null;
@@ -7,6 +8,7 @@ interface Web3ContextType {
     signer: ethers.JsonRpcSigner | null;
     contractAddress: string | null;
     contract: ethers.Contract | null;
+    paperCount: BigInt;
     connectWallet: () => Promise<void>;
     setContractAddress: (address: string) => void;
 }
@@ -17,152 +19,12 @@ const Web3Context = createContext<Web3ContextType>({
     signer: null,
     contractAddress: null,
     contract: null,
+    paperCount: 0n,
     connectWallet: async () => { },
     setContractAddress: () => { }
 });
 
-const ABI = [
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "paperId",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "author",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "title",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "uri",
-                "type": "string"
-            }
-        ],
-        "name": "PaperSubmitted",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "paperId",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "reviewer",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "url",
-                "type": "string"
-            }
-        ],
-        "name": "ReviewSubmitted",
-        "type": "event"
-    },
-    {
-        "inputs": [],
-        "name": "paperCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "papers",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "author",
-                "type": "address"
-            },
-            {
-                "internalType": "string",
-                "name": "title",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "uri",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "paperId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "url",
-                "type": "string"
-            }
-        ],
-        "name": "reviewPaper",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "title",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "url",
-                "type": "string"
-            }
-        ],
-        "name": "submitPaper",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
-];
+const ABI = contractJSON.abi;
 
 export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [account, setAccount] = useState<string | null>(null);
@@ -170,6 +32,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
     const [contract, setContract] = useState<ethers.Contract | null>(null);
     const [contractAddress, setContractAddress] = useState<string | null>(null);
+    const [paperCount, setPaperCount] = useState<BigInt>(0n);
 
     const connectWallet = async () => {
         if (!window.ethereum) {
@@ -202,14 +65,45 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
                 const dPeerReview = new ethers.Contract(contractAddress, ABI, provider)
                 setContract(dPeerReview);
                 console.log(dPeerReview);
+                console.log('paper count', await dPeerReview.paperCount());
+                setPaperCount(await dPeerReview.paperCount());
             }
         };
 
         updateContract();
     }, [signer, contractAddress]);
 
+    // Submission Event subscription
+    useEffect(() => {
+        if (!contract) return;
+
+        const handlePaperSubmitted = (
+            paperId: BigInt,
+            author: string,
+            title: string,
+            uri: string
+        ) => {
+            console.log("PaperSubmitted 📄:", {
+                paperId: paperId.toString(),
+                author,
+                title,
+                uri,
+            });
+
+            if (paperId > paperCount) {
+                setPaperCount(paperId)
+            }
+        };
+
+        contract.on("PaperSubmitted", handlePaperSubmitted);
+
+        return () => {
+            contract.off("PaperSubmitted", handlePaperSubmitted);
+        };
+    }, [contract]);
+
     return (
-        <Web3Context.Provider value={{ account, provider, signer, contract, contractAddress, connectWallet, setContractAddress }}>
+        <Web3Context.Provider value={{ account, provider, signer, contract, contractAddress, paperCount, connectWallet, setContractAddress }}>
             {children}
         </Web3Context.Provider>
     );
